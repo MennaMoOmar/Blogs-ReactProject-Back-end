@@ -1,4 +1,5 @@
 const User = require('../model/user')
+
 module.exports = async (req, res, next) => {
   try {
     const authorization = req.headers.authorization;

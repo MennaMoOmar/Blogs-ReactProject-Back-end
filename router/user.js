@@ -1,3 +1,4 @@
+/* imports npm */
 const express = require("express");
 const router = express.Router();
 const { body } = require("express-validator");
@@ -13,7 +14,6 @@ const validateRequest = require("../middleware/validateRequest");
 /* import helpers */
 const CustomError = require("../helpers/customError");
 
-
 //get all users
 router.get("/", async (req, res, next) => {
   try {
@@ -28,10 +28,12 @@ router.get("/", async (req, res, next) => {
 //register
 router.post(
   "/",
-  checkRequiredParams(["username", "password","firstname","lastname"]),
+  checkRequiredParams(["username", "password", "firstname", "lastname"]),
   validateRequest([
     body("username").isEmail(),
-    body("password").isLength({ min: 5 }),
+    body("password").isLength({ min: 5, max: 20 }),
+    body("firstname").isLength({ min: 3, max: 10 }),
+    body("lastname").isLength({ min: 3, max: 10 }),
   ]),
   async (req, res, next) => {
     const createdUser = new User({
@@ -74,5 +76,41 @@ router.post(
 router.get("/profile", authenticationMiddleWare, async (req, res, next) => {
   res.send(req.user);
 });
+
+//get user by id
+router.get("/:id", async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id);
+    res.send(user);
+  } catch (err) {
+    res.status(422).send({
+      error: err,
+      statusCode: 422,
+    });
+  }
+});
+
+//edit profile
+router.patch(
+  "/profile",
+  authenticationMiddleWare,
+  checkRequiredParams(["firstname", "lastname"]),
+  validateRequest([
+    body("firstname").isLength({ min: 3, max: 10 }),
+    body("lastname").isLength({ min: 3, max: 10 }),
+  ]),
+  async (req, res, next) => {
+    const id = req.user.id;
+    let user = await User.findById(id);
+    let updatedUser = await User.findOneAndUpdate(id, {
+      firstname: req.body.firstname || user.firstname,
+      lastname: req.body.lastname || user.lastname,
+      phone: req.body.phone || user.phone,
+    }).exec();
+    res.send(updatedUser);
+  }
+);
+
+
 
 module.exports = router;
