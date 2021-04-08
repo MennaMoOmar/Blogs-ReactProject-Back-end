@@ -10,7 +10,7 @@ if(missingEnvs.length){
 module.exports = {
 saltRounds : process.env.SALT_ROUNDS || 7,
 jwtSecret : process.env.JWT_SECRET,
-mongoURI : process.env.MOMGO_URI,
+mongoURI : process.env.MOMGO_URI || "mongodb://localhost:27017/newsDB",
 port: process.env.PORT || 3000
     
 }

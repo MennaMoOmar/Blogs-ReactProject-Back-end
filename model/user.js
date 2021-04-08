@@ -5,11 +5,12 @@ const jwt = require("jsonwebtoken");
 const util = require("util");
 const _ = require("lodash");
 
-const {saltRounds,jwtSecret} = require('../config');
+const {jwtSecret} = require('../config');
 
 /* var */
 const signJWT = util.promisify(jwt.sign);
 const verifyJWT = util.promisify(jwt.verify);
+const saltRounds = 7;
 
 /* schema */
 const schema = new mongoose.Schema(
