@@ -26,4 +26,51 @@ router.get("/", async (req, res, next) => {
   }
 });
 
+//add post
+router.post(
+  "/addPost",
+  authenticationMiddleWare,
+  checkRequiredParams(["title", "body"]),
+  validateRequest([
+    body("title").isLength({ min: 5, max: 20 }),
+    body("body").isLength({ min: 5 }),
+  ]),
+  async (req, res, next) => {
+    const createdPost = new Post({
+      userId: req.user.id,
+      title: req.body.title,
+      body: req.body.body,
+    });
+    const post = await createdPost.save();
+    res.status(200).send(post);
+  }
+);
+
+//get post by id
+router.get("/:id", async (req, res, next) => {
+    try {
+      const post = await Post.findById(req.params.id);
+      res.send(post);
+    } catch (err) {
+      res.status(422).send({
+        error: err,
+        statusCode: 422,
+      });
+    }
+  });
+
+//delete post
+router.delete("/:id", async (req, res, next) => { 
+    try {
+        const post = await Post.findById(req.params.id);
+        await post.remove()
+        res.status(200).send({message: "post removed succesfuly"})
+      } catch (err) {
+        res.status(422).send({
+          error: err,
+          statusCode: 422,
+        });
+      }
+  });
+
 module.exports = router;
