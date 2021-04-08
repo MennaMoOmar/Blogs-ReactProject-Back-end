@@ -4,12 +4,13 @@ module.exports = (params) => (req, res, next) => {
   const missingParams = params.filter((paramsName) => !recievedParams.includes(paramsName));
   if (missingParams.length) {
     const error = new Error("requird param missing");
-    error.statusCode = 442;
+    error.statusCode = 406;
     error.errors = missingParams.reduce((agg, param) => {
       agg[param] = { type: "required" };
       return agg;
     }, {});
-    return next(error);
+    return res.status(406).send({error: error})
+    // return next(error);
   }
   next()
 };

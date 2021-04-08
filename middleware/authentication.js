@@ -12,7 +12,8 @@ module.exports = async (req, res, next) => {
     }
     next();
   } catch (err) {
-    err.statusCode = 401;
-    next(err);
+    res.status(401).send({error: err, statusCode:401})
+    // err.statusCode = 401;
+    // next(err);
   }
 }

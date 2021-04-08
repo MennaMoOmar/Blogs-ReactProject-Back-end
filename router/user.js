@@ -36,6 +36,11 @@ router.post(
     body("lastname").isLength({ min: 3, max: 10 }),
   ]),
   async (req, res, next) => {
+    const {username} = req.body
+    let exists = await User.count({ username });
+    if (exists) {
+        return res.status(409).send({ error: "Email already exists", statusCode: 409 })
+    }
     const createdUser = new User({
       username: req.body.username,
       password: req.body.password,
@@ -111,6 +116,10 @@ router.patch(
   }
 );
 
-
+//delete profile
+router.delete("/profile", authenticationMiddleWare, async (req, res, next) => {
+  await req.user.remove();
+  res.status(200).send({message: "user removed succesfuly"})
+});
 
 module.exports = router;

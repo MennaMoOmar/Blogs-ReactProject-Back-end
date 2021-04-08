@@ -6,8 +6,9 @@ module.exports = (validatorArray) => async (req, res, next) => {
   await Promise.all(promises);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    const error = new CustomError("Oops Validation Error!", 422, errors.mapped());
-    return next(error);
+    return res.status(400).send({error: "Oops Validation Error!", statusCode:400})
+    // const error = new CustomError("Oops Validation Error!", 422, errors.mapped());
+    // return next(error);
   }
   next();
 };
