@@ -6,6 +6,7 @@ const util = require("util");
 const _ = require("lodash");
 
 const {jwtSecret} = require('../config');
+const Post = require('./post')
 
 /* var */
 const signJWT = util.promisify(jwt.sign);
@@ -82,6 +83,13 @@ schema.statics.getUserFromToken = async function (token) {
   const user = await User.findById(id);
   return user;
 };
+
+//relationship to Todo
+schema.virtual('post', {
+  ref: 'Post',
+  localField: '_id',
+  foreignField: 'userId'
+})
 
 const User = mongoose.model("User", schema);
 module.exports = User;
