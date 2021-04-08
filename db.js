@@ -1,5 +1,7 @@
 const mongoose = require('mongoose')
-mongoose.connect("mongodb://localhost:27017/newsDB",{
+const {mongoURI} = require('./config')
+
+mongoose.connect(mongoURI,{
     useNewUrlParser:true,
     useUnifiedTopology:true
 })

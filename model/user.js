@@ -5,10 +5,10 @@ const jwt = require("jsonwebtoken");
 const util = require("util");
 const _ = require("lodash");
 
+const {saltRounds,jwtSecret} = require('../config');
+
 /* var */
-const saltRounds = 7;
 const signJWT = util.promisify(jwt.sign);
-const jwtSecret = "mySecretKey";
 const verifyJWT = util.promisify(jwt.verify);
 
 /* schema */
