@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const util = require("util");
+const _ = require("lodash");
 
 /* var */
 const saltRounds = 7;
@@ -11,31 +12,40 @@ const jwtSecret = "mySecretKey";
 const verifyJWT = util.promisify(jwt.verify);
 
 /* schema */
-const schema = new mongoose.Schema({
-  username: {
-    type: String,
-    require: true,
-    unique: true,
+const schema = new mongoose.Schema(
+  {
+    username: {
+      type: String,
+      require: true,
+      unique: true,
+    },
+    password: {
+      type: String,
+      require: true,
+    },
+    firstname: {
+      type: String,
+      minlength: 3,
+      maxlength: 10,
+    },
+    lastname: {
+      type: String,
+      minlength: 3,
+      maxlength: 10,
+    },
+    phone: {
+      type: String,
+      default: "",
+    },
   },
-  password: {
-    type: String,
-    require: true,
-  },
-  firstname: {
-    type: String,
-    minlength: 3,
-    maxlength: 10,
-  },
-  lastname: {
-    type: String,
-    minlength: 3,
-    maxlength: 10,
-  },
-  phones: {
-    type: String,
-    default: "",
-  },
-});
+  {
+    toJSON: {
+      transform: (doc, ret) => {
+        _.omit(ret, ["__v", "password"]);
+      }
+    }
+  }
+);
 
 /* hashing password */
 schema.pre("save", async function () {
