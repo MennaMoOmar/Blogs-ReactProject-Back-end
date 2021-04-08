@@ -29,7 +29,7 @@ router.get("/", async (req, res, next) => {
 router.post(
   "/",
   validateRequest([
-    body("username").isLength({ min: 5 }),
+    body("username").isEmail(),
     body("password").isLength({ min: 5 }),
   ]),
   async (req, res, next) => {

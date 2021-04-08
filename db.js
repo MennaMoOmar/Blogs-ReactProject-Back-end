@@ -12,5 +12,3 @@ mongoose.connect(mongoURI,{
     console.log(err)
     process.exit(1)
 })
-
-// MOMGO_URI = "mongodb+srv://menna:123@cluster0.4dkru.mongodb.net/newsDB?retryWrites=true&w=majority" || "mongodb://localhost:27017/newsDB"
