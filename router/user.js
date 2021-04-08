@@ -28,6 +28,7 @@ router.get("/", async (req, res, next) => {
 //register
 router.post(
   "/",
+  checkRequiredParams(["username", "password","firstname","lastname"]),
   validateRequest([
     body("username").isEmail(),
     body("password").isLength({ min: 5 }),
