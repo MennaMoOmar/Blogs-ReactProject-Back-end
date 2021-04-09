@@ -26,6 +26,32 @@ router.get("/", async (req, res, next) => {
   }
 });
 
+//get all posts by user id
+router.get("/allPosts/:id", async (req, res, next) => {
+  try {
+    const posts = await Post.find({userId: req.params.id});
+    res.send(posts);
+  } catch (err) {
+    res.status(422).send({
+      error: err,
+      statusCode: 422,
+    });
+  }
+});
+
+//get all posts for login user
+router.get("/allPosts", authenticationMiddleWare, async (req, res, next) => {
+    try {
+      const posts = await Post.find({userId: req.user.id});
+      res.send(posts);
+    } catch (err) {
+      res.status(422).send({
+        error: err,
+        statusCode: 422,
+      });
+    }
+  });
+
 //add post
 router.post(
   "/addPost",
