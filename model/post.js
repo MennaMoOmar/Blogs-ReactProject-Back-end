@@ -21,6 +21,25 @@ const schema = new mongoose.Schema({
     optional: true,
     default: Date.now,
   },
+  likes: [
+    {
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    },
+  ],
+  comments: [
+    {
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+      comment: {
+        type: String,
+      },
+    },
+  ],
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,

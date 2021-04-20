@@ -111,6 +111,9 @@ router.patch(
       firstname: req.body.firstname || user.firstname,
       lastname: req.body.lastname || user.lastname,
       phone: req.body.phone || user.phone,
+      country: req.body.country || user.country,
+      city: req.body.city || user.city,
+      street: req.body.street || user.street,
     }).exec();
     res.send(updatedUser);
   }

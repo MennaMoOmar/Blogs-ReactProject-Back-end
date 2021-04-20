@@ -39,6 +39,18 @@ const schema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    country: {
+      type: String,
+      default: "",
+    },
+    city: {
+      type: String,
+      default: "",
+    },
+    street: {
+      type: String,
+      default: "",
+    }
   },
   {
     toJSON: {
