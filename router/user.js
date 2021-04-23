@@ -36,10 +36,12 @@ router.post(
     body("lastname").isLength({ min: 3, max: 10 }),
   ]),
   async (req, res, next) => {
-    const {username} = req.body
+    const { username } = req.body;
     let exists = await User.count({ username });
     if (exists) {
-        return res.status(409).send({ error: "Email already exists", statusCode: 409 })
+      return res
+        .status(409)
+        .send({ error: "Email already exists", statusCode: 409 });
     }
     const createdUser = new User({
       username: req.body.username,
@@ -60,13 +62,23 @@ router.post(
   async (req, res, next) => {
     const user = await User.findOne({ username: req.body.username });
     if (!user) {
-      throw new CustomError("wrong username or password", 401);
+      // throw new CustomError("wrong username or password", 401);
+      res.status(401).send({
+        error: "wrong username or password",
+        statusCode: 401,
+        succsess: "false",
+      });
     }
     const isMatch = await user.checkPassword(req.body.password);
     const token = await user.generateToken();
     console.log(isMatch);
     if (!isMatch) {
-      throw new CustomError("wrong username or password", 401);
+      // throw new CustomError("wrong username or password", 401);
+      res.status(401).send({
+        error: "wrong username or password",
+        statusCode: 401,
+        succsess: "false",
+      });
     }
     // const token = await user.generateToken();
     res.json({
@@ -122,7 +134,7 @@ router.patch(
 //delete profile
 router.delete("/profile", authenticationMiddleWare, async (req, res, next) => {
   await req.user.remove();
-  res.status(200).send({message: "user removed succesfuly"})
+  res.status(200).send({ message: "user removed succesfuly" });
 });
 
 module.exports = router;

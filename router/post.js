@@ -99,6 +99,19 @@ router.patch(
   }
 );
 
+//get post by userid
+router.get("/user/:id", async (req, res, next) => {
+  try {
+    const post = await Post.find({userId: req.params.id});
+    res.send(post);
+  } catch (err) {
+    res.status(422).send({
+      error: err,
+      statusCode: 422,
+    });
+  }
+});
+
 //get post by id
 router.get("/:id", async (req, res, next) => {
   try {
