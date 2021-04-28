@@ -11,6 +11,9 @@ const schema = new mongoose.Schema({
     type: String,
     require: true,
   },
+  image: {
+    type: Buffer
+  },
   createdAt: {
     type: Date,
     optional: true,

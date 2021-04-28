@@ -2,6 +2,8 @@
 const express = require("express");
 const router = express.Router();
 const { body } = require("express-validator");
+const multer = require("multer");
+const sharp = require("sharp");
 
 /* import models */
 const User = require("../model/user");
@@ -11,6 +13,7 @@ const Post = require("../model/post");
 const checkRequiredParams = require("../middleware/checkRequired");
 const authenticationMiddleWare = require("../middleware/authentication");
 const validateRequest = require("../middleware/validateRequest");
+const validateImage = require("../middleware/validationImage");
 
 /* import helpers */
 const CustomError = require("../helpers/customError");
@@ -135,6 +138,73 @@ router.delete("/:id", async (req, res, next) => {
     res.status(422).send({
       error: err,
       statusCode: 422,
+    });
+  }
+});
+
+/* image */
+const upload = multer({
+  limits: {
+    fileSize: 5000000,
+  },
+  fileFilter(req, file, cb) {
+    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+      return cb(new Error("please upload image"));
+    }
+    cb(undefined, true);
+  },
+});
+
+//add image-auth
+router.post(
+  "/postImg",
+  authenticationMiddleWare,
+  upload.single("postImage"),
+  async (req, res, next) => {
+    const buffer = await sharp(req.file.buffer).png().toBuffer();
+    req.post.image = buffer;
+    await req.post.save();
+    res.send({
+      message: "image added successfully",
+    });
+  },
+  validateImage
+);
+
+//delete image-auth
+router.delete(
+  "/postImg",
+  authenticationMiddleWare,
+  async (req, res, next) => {
+    req.post.image = undefined;
+    await req.post.save();
+    res.send({
+      message: "image deleted successfully",
+    });
+  }
+);
+
+//get image-auth
+router.get("/postImg", authenticationMiddleWare, async (req, res, next) => {
+  res.set("Content-Type", "image/png");
+  res.send(req.post.image)
+});
+
+//get image by id
+router.get("/postImg/:id", async (req, res, next) => {
+  try {
+    const post = await post.findById(req.params.id);
+    if (!post || !post.image) {
+      return res.status(422).send({
+        error: "post not found",
+        statusCode: 422,
+      });
+    }
+    res.set("Content-Type", "image/jpg");
+    res.send(post.image);
+  } catch (err) {
+    res.status(400).send({
+      error: err,
     });
   }
 });
