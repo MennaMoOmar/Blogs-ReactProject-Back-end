@@ -50,6 +50,9 @@ const schema = new mongoose.Schema(
     street: {
       type: String,
       default: "",
+    },
+    image: {
+      type: Buffer
     }
   },
   {
@@ -102,6 +105,16 @@ schema.virtual('post', {
   localField: '_id',
   foreignField: 'userId'
 })
+
+//return specific data
+schema.methods.toJSON = function () {
+  const user = this
+  const userObject = user.toObject()
+  delete userObject.__v
+  delete userObject.password
+  delete userObject.image
+  return userObject
+}
 
 const User = mongoose.model("User", schema);
 module.exports = User;

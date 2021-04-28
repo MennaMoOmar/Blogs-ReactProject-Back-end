@@ -15,6 +15,7 @@ require('express-async-errors')
 /*import routers */
 const userRouter = require('./router/user')
 const postRouter = require('./router/post')
+const imageRouter = require('./router/image')
 
 require('./db')
 
@@ -23,6 +24,9 @@ app.use('/user', userRouter);
 
 /* post */
 app.use('/post', postRouter);
+
+/* image */
+app.use('/image', imageRouter);
 
 /* listenning on server */
 app.listen(port,()=>{

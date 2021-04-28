@@ -2,6 +2,8 @@
 const express = require("express");
 const router = express.Router();
 const { body } = require("express-validator");
+const multer = require("multer");
+const sharp = require("sharp");
 
 /* import models */
 const User = require("../model/user");
@@ -10,6 +12,7 @@ const User = require("../model/user");
 const checkRequiredParams = require("../middleware/checkRequired");
 const authenticationMiddleWare = require("../middleware/authentication");
 const validateRequest = require("../middleware/validateRequest");
+const validateImage = require("../middleware/validationImage");
 
 /* import helpers */
 const CustomError = require("../helpers/customError");
@@ -135,6 +138,73 @@ router.patch(
 router.delete("/profile", authenticationMiddleWare, async (req, res, next) => {
   await req.user.remove();
   res.status(200).send({ message: "user removed succesfuly" });
+});
+
+/* image */
+const upload = multer({
+  limits: {
+    fileSize: 5000000,
+  },
+  fileFilter(req, file, cb) {
+    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+      return cb(new Error("please upload image"));
+    }
+    cb(undefined, true);
+  },
+});
+
+//add image-auth
+router.post(
+  "/profileImg",
+  authenticationMiddleWare,
+  upload.single("profileImage"),
+  async (req, res, next) => {
+    const buffer = await sharp(req.file.buffer).resize({width:250, height:250}).png().toBuffer();
+    req.user.image = buffer;
+    await req.user.save();
+    res.send({
+      message: "image added successfully",
+    });
+  },
+  validateImage
+);
+
+//delete image-auth
+router.delete(
+  "/profileImg",
+  authenticationMiddleWare,
+  async (req, res, next) => {
+    req.user.image = undefined;
+    await req.user.save();
+    res.send({
+      message: "image deleted successfully",
+    });
+  }
+);
+
+//get image-auth
+router.get("/profileImg", authenticationMiddleWare, async (req, res, next) => {
+  res.set("Content-Type", "image/png");
+  res.send(req.user.image)
+});
+
+//get image by id
+router.get("/profileImg/:id", async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user || !user.image) {
+      return res.status(422).send({
+        error: "user not found",
+        statusCode: 422,
+      });
+    }
+    res.set("Content-Type", "image/jpg");
+    res.send(user.image);
+  } catch (err) {
+    res.status(400).send({
+      error: err,
+    });
+  }
 });
 
 module.exports = router;
