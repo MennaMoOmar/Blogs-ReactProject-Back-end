@@ -32,7 +32,7 @@ router.get("/", async (req, res, next) => {
 //get all posts by user id
 router.get("/allPosts/:id", async (req, res, next) => {
   try {
-    const posts = await Post.find({userId: req.params.id});
+    const posts = await Post.find({ userId: req.params.id });
     res.send(posts);
   } catch (err) {
     res.status(422).send({
@@ -44,16 +44,16 @@ router.get("/allPosts/:id", async (req, res, next) => {
 
 //get all posts for login user
 router.get("/allPosts", authenticationMiddleWare, async (req, res, next) => {
-    try {
-      const posts = await Post.find({userId: req.user.id});
-      res.send(posts);
-    } catch (err) {
-      res.status(422).send({
-        error: err,
-        statusCode: 422,
-      });
-    }
-  });
+  try {
+    const posts = await Post.find({ userId: req.user.id });
+    res.send(posts);
+  } catch (err) {
+    res.status(422).send({
+      error: err,
+      statusCode: 422,
+    });
+  }
+});
 
 //add post
 router.post(
@@ -105,7 +105,7 @@ router.patch(
 //get post by userid
 router.get("/user/:id", async (req, res, next) => {
   try {
-    const post = await Post.find({userId: req.params.id});
+    const post = await Post.find({ userId: req.params.id });
     res.send(post);
   } catch (err) {
     res.status(422).send({
@@ -155,45 +155,38 @@ const upload = multer({
   },
 });
 
-//add image-auth
+//add image by id
 router.post(
-  "/postImg",
-  authenticationMiddleWare,
+  "/postImg/:id",
   upload.single("postImage"),
   async (req, res, next) => {
-    const buffer = await sharp(req.file.buffer).png().toBuffer();
-    req.post.image = buffer;
-    await req.post.save();
-    res.send({
-      message: "image added successfully",
-    });
+    try {
+      const post = await Post.findById(req.params.id);
+      if (!post) {
+        return res.status(422).send({
+          error: "post not found",
+          statusCode: 422,
+        });
+      }
+      const buffer = await sharp(req.file.buffer).png().toBuffer();
+      post.image = buffer;
+      await post.save();
+      res.send({
+        message: "image added successfully",
+      });
+    } catch (err) {
+      res.status(400).send({
+        error: err,
+      });
+    }
   },
   validateImage
 );
 
-//delete image-auth
-router.delete(
-  "/postImg",
-  authenticationMiddleWare,
-  async (req, res, next) => {
-    req.post.image = undefined;
-    await req.post.save();
-    res.send({
-      message: "image deleted successfully",
-    });
-  }
-);
-
-//get image-auth
-router.get("/postImg", authenticationMiddleWare, async (req, res, next) => {
-  res.set("Content-Type", "image/png");
-  res.send(req.post.image)
-});
-
 //get image by id
 router.get("/postImg/:id", async (req, res, next) => {
   try {
-    const post = await post.findById(req.params.id);
+    const post = await Post.findById(req.params.id);
     if (!post || !post.image) {
       return res.status(422).send({
         error: "post not found",
