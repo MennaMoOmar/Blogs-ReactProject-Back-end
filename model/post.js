@@ -50,5 +50,14 @@ const schema = new mongoose.Schema({
   },
 });
 
+//return specific data
+schema.methods.toJSON = function () {
+  const post = this
+  const postObject = post.toObject()
+  delete postObject.__v
+  delete postObject.image
+  return postObject
+}
+
 const Post = mongoose.model("Post", schema);
 module.exports = Post;
