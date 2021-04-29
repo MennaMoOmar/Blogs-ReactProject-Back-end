@@ -60,4 +60,5 @@ schema.methods.toJSON = function () {
 }
 
 const Post = mongoose.model("Post", schema);
+
 module.exports = Post;
