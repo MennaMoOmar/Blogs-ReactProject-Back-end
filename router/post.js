@@ -142,6 +142,19 @@ router.delete("/:id", async (req, res, next) => {
   }
 });
 
+//delete all posts
+router.delete('/', async (req, res, next) => {
+  try {
+    await Post.remove({})
+    res.status(200).send({ message: "posts deleted succesfuly" });
+  } catch (err) {
+    res.status(422).send({
+      error: err,
+      statusCode: 422,
+    });
+  }
+});
+
 /* image */
 const upload = multer({
   limits: {
