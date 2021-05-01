@@ -44,6 +44,14 @@ router.get("/allPosts/:id", async (req, res, next) => {
 
 //get all posts for login user
 router.get("/allPosts", authenticationMiddleWare, async (req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Max-Age", "1800");
+  res.setHeader("Access-Control-Allow-Headers", "content-type");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "PUT, POST, GET, DELETE, PATCH, OPTIONS"
+  );
   try {
     const posts = await Post.find({ userId: req.user.id });
     res.send(posts);
