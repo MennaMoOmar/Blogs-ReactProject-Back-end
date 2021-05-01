@@ -122,7 +122,6 @@ router.patch(
   async (req, res, next) => {
     const id = req.user.id;
     let user = await User.findById(id);
-    // console.log(user.firstname)
       await user.update({
       firstname: req.body.firstname || user.firstname,
       lastname: req.body.lastname || user.lastname,
