@@ -122,7 +122,8 @@ router.patch(
   async (req, res, next) => {
     const id = req.user.id;
     let user = await User.findById(id);
-    let updatedUser = await User.findOneAndUpdate(id, {
+    // console.log(user.firstname)
+      await user.update({
       firstname: req.body.firstname || user.firstname,
       lastname: req.body.lastname || user.lastname,
       phone: req.body.phone || user.phone,
@@ -130,7 +131,16 @@ router.patch(
       city: req.body.city || user.city,
       street: req.body.street || user.street,
     }).exec();
-    res.send(updatedUser);
+    res.send(user)
+    // let updatedUser = await User.findOneAndUpdate(id, {
+    //   firstname: req.body.firstname || user.firstname,
+    //   lastname: req.body.lastname || user.lastname,
+    //   phone: req.body.phone || user.phone,
+    //   country: req.body.country || user.country,
+    //   city: req.body.city || user.city,
+    //   street: req.body.street || user.street,
+    // }).exec();
+    // res.send(updatedUser);
   }
 );
 
@@ -146,7 +156,7 @@ const upload = multer({
     fileSize: 5000000,
   },
   fileFilter(req, file, cb) {
-    if (!file.originalname.match(/\.(jpg|jpeg|png|PNG)$/)) {
+    if (!file.originalname.match(/\.(jpg|jpeg|png|PNG|JPG)$/)) {
       return cb(new Error("please upload image"));
     }
     cb(undefined, true);
