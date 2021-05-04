@@ -88,11 +88,18 @@ router.patch(
     try {
       const id = req.params.id;
       let post = await Post.findById(id);
-      let updatedPost = await Post.findOneAndUpdate(id, {
-        title: req.body.title || post.title,
-        body: req.body.body || post.body,
-      }).exec();
-      res.send(updatedPost);
+      // let updatedPost = await Post.findOneAndUpdate(id, {
+      //   title: req.body.title || post.title,
+      //   body: req.body.body || post.body,
+      // }).exec();
+      // res.send(updatedPost);
+      await post
+        .update({
+          title: req.body.title || post.title,
+          body: req.body.body || post.body,
+        })
+        .exec();
+      res.send(post);
     } catch (err) {
       res.status(422).send({
         error: err,
@@ -143,9 +150,9 @@ router.delete("/:id", async (req, res, next) => {
 });
 
 //delete all posts
-router.delete('/', async (req, res, next) => {
+router.delete("/", async (req, res, next) => {
   try {
-    await Post.remove({})
+    await Post.remove({});
     res.status(200).send({ message: "posts deleted succesfuly" });
   } catch (err) {
     res.status(422).send({
